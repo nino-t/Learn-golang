@@ -6,6 +6,7 @@ import (
 	"github.com/go-learn/util/env"
 	"github.com/go-learn/webserver"
 	"github.com/joeshaw/envdecode"
+	"github.com/joho/godotenv"
 )
 
 type (
@@ -40,9 +41,16 @@ type (
 	}
 )
 
-func main() {
+func init() {
 	println("APP ENV:", env.Info())
 
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+	if env.IsDevelopment() {
+		godotenv.Load()
+	}
+}
+
+func main() {
 	var cfg config
 	err := envdecode.Decode(&cfg)
 	if err != nil {

@@ -42,7 +42,7 @@ func Info() string {
 	return e
 }
 
-func IsDevelopmet() bool {
+func IsDevelopment() bool {
 	return ie == idevelopment
 }
 
