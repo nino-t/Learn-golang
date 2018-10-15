@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/go-learn/util/connection"
 	"github.com/go-learn/util/env"
+	"github.com/go-learn/webserver"
 	"github.com/joeshaw/envdecode"
 )
 
@@ -49,21 +49,27 @@ func main() {
 		log.Fatalf("Failed to load configuration: %s\n", err)
 	}
 
-	db := connection.InitDB(
-		connection.DB_CONFIG{
-			HOST:     cfg.DATABASE.HOST,
-			PORT:     cfg.DATABASE.PORT,
-			DATABASE: cfg.DATABASE.DATABASE,
-			USERNAME: cfg.DATABASE.USERNAME,
-			PASSWORD: cfg.DATABASE.PASSWORD,
-		},
-	)
+	// db := connection.InitDB(
+	// 	connection.DB_CONFIG{
+	// 		HOST:     cfg.DATABASE.HOST,
+	// 		PORT:     cfg.DATABASE.PORT,
+	// 		DATABASE: cfg.DATABASE.DATABASE,
+	// 		USERNAME: cfg.DATABASE.USERNAME,
+	// 		PASSWORD: cfg.DATABASE.PASSWORD,
+	// 	},
+	// )
 
-	redis := connection.InitRedis(
-		connection.REDIS_CONFIG{
-			HOST: cfg.REDIS.HOST,
-			PORT: cfg.REDIS.PORT,
-			WAIT: cfg.REDIS.WAIT,
+	// redis := connection.InitRedis(
+	// 	connection.REDIS_CONFIG{
+	// 		HOST: cfg.REDIS.HOST,
+	// 		PORT: cfg.REDIS.PORT,
+	// 		WAIT: cfg.REDIS.WAIT,
+	// 	},
+	// )
+
+	webserver.Serve(
+		webserver.SERVE_CONFIG{
+			PORT: cfg.APP.PORT,
 		},
 	)
 }
