@@ -1,19 +1,19 @@
 package todo
 
-import "log"
+import (
+	"log"
+)
 
-func (c *core) GetTodoListFromDB(todo TodoDB) error {
-	stmt, err := c.db.PrepareNamed(`SELECT * FROM todos WHERE deleted_at IS NULL`)
+func (c *core) GetTodoListFromDB() ([]TodoDB, error) {
+	var todos []TodoDB
+
+	query := `SELECT * FROM todos WHERE deleted_at IS NULL`
+
+	err := c.db.Select(&todos, query)
 	if err != nil {
-		log.Println("[DB] Error prepared name query get todo:", err)
-		return err
+		log.Println("[DB] Error query get todos:", err)
+		return todos, err
 	}
 
-	_, err = stmt.Exec(todo)
-	if err != nil {
-		log.Println("[DB] Error query get todo:", err)
-		return err
-	}
-
-	return nil
+	return todos, nil
 }

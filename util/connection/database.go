@@ -24,7 +24,7 @@ var sqlxOpen = sqlx.Open
 var logFatalf = log.Fatalf
 
 func InitDB(cfg DB_CONFIG) *sqlx.DB {
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", cfg.USERNAME, cfg.USERNAME, cfg.HOST, cfg.PORT, cfg.DATABASE)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", cfg.USERNAME, cfg.PASSWORD, cfg.HOST, cfg.PORT, cfg.DATABASE)
 	db, err := sqlxOpen("mysql", dsn)
 	if err != nil {
 		logFatalf("Failed connecting to db. dsn: %s, err: %s", dsn, err)

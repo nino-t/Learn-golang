@@ -4,9 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/mux"
+	"github.com/go-learn/pkg/todo"
 
 	controller "github.com/go-learn/webserver/controller"
+	"github.com/gorilla/mux"
 )
 
 type SERVE_CONFIG struct {
@@ -15,11 +16,11 @@ type SERVE_CONFIG struct {
 
 var listenAndServe = http.ListenAndServe
 
-func Serve(cfg SERVE_CONFIG) {
+func Serve(cfg SERVE_CONFIG, todo todo.ICore) {
 	var httpPort = ":" + strconv.Itoa(cfg.PORT)
 
 	envConfig := controller.EnvConfig{}
 	router := mux.NewRouter()
-	controller.Init(router, envConfig)
+	controller.Init(router, envConfig, todo)
 	listenAndServe(httpPort, router)
 }

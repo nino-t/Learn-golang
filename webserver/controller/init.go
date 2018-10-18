@@ -16,9 +16,10 @@ type handler struct {
 	todo todo.ICore
 }
 
-func Init(r *mux.Router, cfg EnvConfig) {
+func Init(r *mux.Router, cfg EnvConfig, todo todo.ICore) {
 	h := &handler{
-		cfg: cfg,
+		cfg:  cfg,
+		todo: todo,
 	}
 
 	r.HandleFunc("/ping", h.handlePing).Methods("GET")
@@ -31,12 +32,12 @@ func (h *handler) handlePing(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) handleTodoList(w http.ResponseWriter, r *http.Request) {
-	// res, err := h.getTodoList()
-	// if err != nil {
-	// 	view.RenderJSONError(w, "No video found", http.StatusNotFound)
-	// } else {
-	// 	view.RenderJSONData(w, res, http.StatusOK)
-	// }
+	res, err := h.getTodoList()
+	if err != nil {
+		view.RenderJSONError(w, "No video found", http.StatusNotFound)
+	} else {
+		view.RenderJSONData(w, res, http.StatusOK)
+	}
 
-	// return
+	return
 }
