@@ -16,6 +16,7 @@ type core struct {
 
 type ICore interface {
 	GetTodoListFromDB() ([]TodoDB, error)
+	CreateTodoFromDB(todoData *TodoData) ([]TodoDB, error)
 }
 
 var logFatalf = log.Fatalf

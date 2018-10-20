@@ -25,8 +25,19 @@ func (h *handler) getTodoList() ([]todo.TodoAttributes, error) {
 			log.Printf("[Get Todos] Failed to Unmarshal Todo Attributes %d, Error: %v", data.ID, err)
 			return collection, err
 		}
-
 		collection = append(collection, TodoAttributes)
+	}
+
+	return collection, nil
+}
+
+func (h handler) createTodo(todoData *todo.TodoData) ([]todo.TodoAttributes, error) {
+	collection := make([]todo.TodoAttributes, 0)
+
+	_, err := h.todo.CreateTodoFromDB(todoData)
+	if err != nil {
+		log.Printf("[Create Todo] Failed to create todo, Error: %v", err)
+		return collection, err
 	}
 
 	return collection, nil

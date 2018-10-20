@@ -20,4 +20,9 @@ type (
 		UpdatedAt myql.NullTime `db:"updated_at"`
 		DeletedAt myql.NullTime `db:"deleted_at"`
 	}
+
+	TodoData struct {
+		Title string `json:"title"`
+		Desc  string `json:"desc"`
+	}
 )
