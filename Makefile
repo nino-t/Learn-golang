@@ -2,7 +2,7 @@
 
 export APP_VERSION=$(shell cat ./package.json | grep version | head -2 | tail -1 | grep -o '".*"' | sed 's/"//g')
 
-APPNAME="videos"
+APPNAME="todos"
 
 all: version build run
 
@@ -11,7 +11,7 @@ version:
 
 build:
 	@echo "Building application..."
-	@go build -v -o videos cmd/serve/main.go
+	@go build -v -o todos cmd/serve/main.go
 	@echo "😁  Success 😁"
 
 run:

@@ -18,6 +18,7 @@ type ICore interface {
 	GetTodoListFromDB() ([]TodoDB, error)
 	CreateTodoFromDB(todoData *TodoData) ([]TodoDB, error)
 	GetTodoDetailFromDB(primaryId interface{}) ([]TodoDB, error)
+	UpdateTodoFromDB(todoData *TodoData) ([]TodoDB, error)
 	DeleteTodoFromDB(primaryId interface{}) ([]TodoDB, error)
 }
 

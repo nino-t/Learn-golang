@@ -22,7 +22,7 @@ type (
 	}
 
 	TodoData struct {
+		ID    string `json:"id"`
 		Title string `json:"title"`
-		Desc  string `json:"desc"`
 	}
 )

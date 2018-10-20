@@ -66,6 +66,18 @@ func (h *handler) getTodo(primaryId interface{}) ([]todo.TodoAttributes, error) 
 	return collection, nil
 }
 
+func (h *handler) updateTodo(todoData *todo.TodoData) ([]todo.TodoAttributes, error) {
+	collection := make([]todo.TodoAttributes, 0)
+
+	_, err := h.todo.UpdateTodoFromDB(todoData)
+	if err != nil {
+		log.Printf("[Update Todo] Failed to update todo, Error: %v", err)
+		return collection, err
+	}
+
+	return collection, nil
+}
+
 func (h *handler) deleteTodo(primaryId interface{}) ([]todo.TodoAttributes, error) {
 	collection := make([]todo.TodoAttributes, 0)
 

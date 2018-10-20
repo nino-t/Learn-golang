@@ -29,6 +29,7 @@ func Init(r *mux.Router, cfg EnvConfig, todo todo.ICore) {
 	r.HandleFunc("/todos", h.handleTodoList).Methods("GET")
 	r.HandleFunc("/todos", h.handleTodoStore).Methods("POST")
 	r.HandleFunc("/todos/{id}", h.handleTodoDetail).Methods("GET")
+	r.HandleFunc("/todos/{id}", h.handleTodoUpdate).Methods("PUT")
 	r.HandleFunc("/todos/{id}", h.handleTodoDelete).Methods("DELETE")
 }
 
@@ -79,6 +80,35 @@ func (h *handler) handleTodoDetail(w http.ResponseWriter, r *http.Request) {
 	res, err := h.getTodo(primaryId)
 	if err != nil {
 		view.RenderJSONError(w, "Failed to get todo", http.StatusBadRequest)
+	} else {
+		view.RenderJSONData(w, res, http.StatusOK)
+	}
+
+	return
+}
+
+func (h *handler) handleTodoUpdate(w http.ResponseWriter, r *http.Request) {
+	queryParams := mux.Vars(r)
+	primaryId := queryParams["id"]
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		view.RenderJSONError(w, "Failed to parse http body", http.StatusBadRequest)
+		return
+	}
+
+	defer r.Body.Close()
+
+	todo := todo.TodoData{}
+	todo.ID = primaryId
+	if err := json.Unmarshal(body, &todo); err != nil {
+		view.RenderJSONError(w, "Failed to encode entry data", http.StatusBadRequest)
+		return
+	}
+
+	res, err := h.updateTodo(&todo)
+	if err != nil {
+		view.RenderJSONError(w, "Failed to update todo", http.StatusBadRequest)
 	} else {
 		view.RenderJSONData(w, res, http.StatusOK)
 	}

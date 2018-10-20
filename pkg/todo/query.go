@@ -68,6 +68,29 @@ func (c *core) GetTodoDetailFromDB(primaryId interface{}) ([]TodoDB, error) {
 	return todos, nil
 }
 
+func (c *core) UpdateTodoFromDB(todoData *TodoData) ([]TodoDB, error) {
+	stmt, err := c.db.PrepareNamed(`
+		UPDATE 
+			todos
+		SET
+			title=:title
+		WHERE
+			id = :id
+	`)
+	if err != nil {
+		log.Println("[DB] Error prepared name query update todo:", err)
+		return nil, err
+	}
+
+	_, err = stmt.Exec(todoData)
+	if err != nil {
+		log.Println("[DB] Error query update todo:", err)
+		return nil, err
+	}
+
+	return nil, nil
+}
+
 func (c *core) DeleteTodoFromDB(primaryId interface{}) ([]TodoDB, error) {
 	var todos []TodoDB
 
