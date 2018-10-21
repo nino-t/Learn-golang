@@ -7,8 +7,8 @@ import (
 	"github.com/vmihailenco/msgpack"
 )
 
-func (h *handler) getTodoList() ([]todo.TodoAttributes, error) {
-	collection := make([]todo.TodoAttributes, 0)
+func (h *handler) getTodoList() ([]todo.TodoModel, error) {
+	collection := make([]todo.TodoModel, 0)
 
 	result, err := h.todo.GetTodoListFromDB()
 	if err != nil {
@@ -17,7 +17,7 @@ func (h *handler) getTodoList() ([]todo.TodoAttributes, error) {
 	}
 
 	for _, data := range result {
-		var TodoAttributes todo.TodoAttributes
+		var TodoAttributes todo.TodoModel
 		todoAttributesByte, err := msgpack.Marshal(data)
 
 		err = msgpack.Unmarshal(todoAttributesByte, &TodoAttributes)
@@ -31,8 +31,8 @@ func (h *handler) getTodoList() ([]todo.TodoAttributes, error) {
 	return collection, nil
 }
 
-func (h handler) createTodo(todoData *todo.TodoData) ([]todo.TodoAttributes, error) {
-	collection := make([]todo.TodoAttributes, 0)
+func (h handler) createTodo(todoData *todo.TodoModel) ([]todo.TodoModel, error) {
+	collection := make([]todo.TodoModel, 0)
 
 	_, err := h.todo.CreateTodoFromDB(todoData)
 	if err != nil {
@@ -43,16 +43,16 @@ func (h handler) createTodo(todoData *todo.TodoData) ([]todo.TodoAttributes, err
 	return collection, nil
 }
 
-func (h *handler) getTodo(primaryId interface{}) ([]todo.TodoAttributes, error) {
-	collection := make([]todo.TodoAttributes, 0)
-	result, err := h.todo.GetTodoDetailFromDB(primaryId)
+func (h *handler) getTodo(todoData *todo.TodoModel) ([]todo.TodoModel, error) {
+	collection := make([]todo.TodoModel, 0)
+	result, err := h.todo.GetTodoDetailFromDB(todoData)
 	if err != nil {
 		log.Printf("[Get Todo] Failed To Get Todo, Error: %v", err)
 		return collection, err
 	}
 
 	for _, data := range result {
-		var TodoAttributes todo.TodoAttributes
+		var TodoAttributes todo.TodoModel
 		todoAttributesByte, err := msgpack.Marshal(data)
 
 		err = msgpack.Unmarshal(todoAttributesByte, &TodoAttributes)
@@ -66,8 +66,8 @@ func (h *handler) getTodo(primaryId interface{}) ([]todo.TodoAttributes, error) 
 	return collection, nil
 }
 
-func (h *handler) updateTodo(todoData *todo.TodoData) ([]todo.TodoAttributes, error) {
-	collection := make([]todo.TodoAttributes, 0)
+func (h *handler) updateTodo(todoData *todo.TodoModel) ([]todo.TodoModel, error) {
+	collection := make([]todo.TodoModel, 0)
 
 	_, err := h.todo.UpdateTodoFromDB(todoData)
 	if err != nil {
@@ -78,10 +78,10 @@ func (h *handler) updateTodo(todoData *todo.TodoData) ([]todo.TodoAttributes, er
 	return collection, nil
 }
 
-func (h *handler) deleteTodo(primaryId interface{}) ([]todo.TodoAttributes, error) {
-	collection := make([]todo.TodoAttributes, 0)
+func (h *handler) deleteTodo(todoData *todo.TodoModel) ([]todo.TodoModel, error) {
+	collection := make([]todo.TodoModel, 0)
 
-	_, err := h.todo.DeleteTodoFromDB(primaryId)
+	_, err := h.todo.DeleteTodoFromDB(todoData)
 	if err != nil {
 		log.Printf("[Delete Todo] Failed to delete todo, Error: %v", err)
 		return collection, err

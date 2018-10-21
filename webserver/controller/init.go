@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/go-learn/pkg/todo"
 
@@ -57,7 +58,7 @@ func (h *handler) handleTodoStore(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	todo := todo.TodoData{}
+	todo := todo.TodoModel{}
 	if err := json.Unmarshal(body, &todo); err != nil {
 		view.RenderJSONError(w, "Failed to encode entry data", http.StatusBadRequest)
 		return
@@ -75,9 +76,12 @@ func (h *handler) handleTodoStore(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) handleTodoDetail(w http.ResponseWriter, r *http.Request) {
 	queryParams := mux.Vars(r)
-	primaryId := queryParams["id"]
+	primaryID, _ := strconv.Atoi(queryParams["id"])
 
-	res, err := h.getTodo(primaryId)
+	var todo = todo.TodoModel{}
+	todo.ID = primaryID
+
+	res, err := h.getTodo(&todo)
 	if err != nil {
 		view.RenderJSONError(w, "Failed to get todo", http.StatusBadRequest)
 	} else {
@@ -89,7 +93,7 @@ func (h *handler) handleTodoDetail(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) handleTodoUpdate(w http.ResponseWriter, r *http.Request) {
 	queryParams := mux.Vars(r)
-	primaryId := queryParams["id"]
+	primaryID, _ := strconv.Atoi(queryParams["id"])
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -99,8 +103,8 @@ func (h *handler) handleTodoUpdate(w http.ResponseWriter, r *http.Request) {
 
 	defer r.Body.Close()
 
-	todo := todo.TodoData{}
-	todo.ID = primaryId
+	todo := todo.TodoModel{}
+	todo.ID = primaryID
 	if err := json.Unmarshal(body, &todo); err != nil {
 		view.RenderJSONError(w, "Failed to encode entry data", http.StatusBadRequest)
 		return
@@ -118,9 +122,12 @@ func (h *handler) handleTodoUpdate(w http.ResponseWriter, r *http.Request) {
 
 func (h *handler) handleTodoDelete(w http.ResponseWriter, r *http.Request) {
 	queryParams := mux.Vars(r)
-	primaryId := queryParams["id"]
+	primaryID, _ := strconv.Atoi(queryParams["id"])
 
-	res, err := h.deleteTodo(primaryId)
+	todo := todo.TodoModel{}
+	todo.ID = primaryID
+
+	res, err := h.deleteTodo(&todo)
 	if err != nil {
 		view.RenderJSONError(w, "Failed to delete todo", http.StatusBadRequest)
 	} else {

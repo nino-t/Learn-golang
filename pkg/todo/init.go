@@ -15,11 +15,11 @@ type core struct {
 }
 
 type ICore interface {
-	GetTodoListFromDB() ([]TodoDB, error)
-	CreateTodoFromDB(todoData *TodoData) ([]TodoDB, error)
-	GetTodoDetailFromDB(primaryId interface{}) ([]TodoDB, error)
-	UpdateTodoFromDB(todoData *TodoData) ([]TodoDB, error)
-	DeleteTodoFromDB(primaryId interface{}) ([]TodoDB, error)
+	GetTodoListFromDB() ([]TodoModel, error)
+	CreateTodoFromDB(todoModel *TodoModel) ([]TodoModel, error)
+	GetTodoDetailFromDB(todoModel *TodoModel) ([]TodoModel, error)
+	UpdateTodoFromDB(todoModel *TodoModel) ([]TodoModel, error)
+	DeleteTodoFromDB(todoModel *TodoModel) ([]TodoModel, error)
 }
 
 var logFatalf = log.Fatalf

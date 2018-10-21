@@ -5,8 +5,8 @@ import (
 	"log"
 )
 
-func (c *core) GetTodoListFromDB() ([]TodoDB, error) {
-	var todos []TodoDB
+func (c *core) GetTodoListFromDB() ([]TodoModel, error) {
+	var todos []TodoModel
 
 	query := `
 		SELECT 
@@ -28,14 +28,14 @@ func (c *core) GetTodoListFromDB() ([]TodoDB, error) {
 	return todos, nil
 }
 
-func (c *core) CreateTodoFromDB(todoData *TodoData) ([]TodoDB, error) {
+func (c *core) CreateTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
 	stmt, err := c.db.PrepareNamed(`INSERT INTO todos (title) VALUES (:title)`)
 	if err != nil {
 		log.Println("[DB] Error prepared name query create todo:", err)
 		return nil, err
 	}
 
-	_, err = stmt.Exec(&todoData)
+	_, err = stmt.Exec(&todoModel)
 	if err != nil {
 		log.Println("[DB] Error query insert todo:", err)
 		return nil, err
@@ -44,8 +44,8 @@ func (c *core) CreateTodoFromDB(todoData *TodoData) ([]TodoDB, error) {
 	return nil, nil
 }
 
-func (c *core) GetTodoDetailFromDB(primaryId interface{}) ([]TodoDB, error) {
-	var todos []TodoDB
+func (c *core) GetTodoDetailFromDB(todoModel *TodoModel) ([]TodoModel, error) {
+	var todos []TodoModel
 
 	query :=
 		`SELECT 
@@ -59,7 +59,7 @@ func (c *core) GetTodoDetailFromDB(primaryId interface{}) ([]TodoDB, error) {
 				deleted_at IS NULL AND
 				id = ?`
 
-	err := c.db.Select(&todos, query, primaryId)
+	err := c.db.Select(&todos, query, todoModel.ID)
 	if err != nil && err != sql.ErrNoRows {
 		log.Println("[DB] Error query get todo:", err)
 		return todos, err
@@ -68,7 +68,7 @@ func (c *core) GetTodoDetailFromDB(primaryId interface{}) ([]TodoDB, error) {
 	return todos, nil
 }
 
-func (c *core) UpdateTodoFromDB(todoData *TodoData) ([]TodoDB, error) {
+func (c *core) UpdateTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
 	stmt, err := c.db.PrepareNamed(`
 		UPDATE 
 			todos
@@ -82,7 +82,7 @@ func (c *core) UpdateTodoFromDB(todoData *TodoData) ([]TodoDB, error) {
 		return nil, err
 	}
 
-	_, err = stmt.Exec(todoData)
+	_, err = stmt.Exec(todoModel)
 	if err != nil {
 		log.Println("[DB] Error query update todo:", err)
 		return nil, err
@@ -91,21 +91,24 @@ func (c *core) UpdateTodoFromDB(todoData *TodoData) ([]TodoDB, error) {
 	return nil, nil
 }
 
-func (c *core) DeleteTodoFromDB(primaryId interface{}) ([]TodoDB, error) {
-	var todos []TodoDB
-
-	query :=
-		`DELETE
-			FROM
-				todos 
-			WHERE
-				id = ?`
-
-	err := c.db.Select(&todos, query, primaryId)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[DB] Error query delete todo:", err)
-		return todos, err
+func (c *core) DeleteTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
+	stmt, err := c.db.PrepareNamed(`
+				DELETE
+					FROM 
+						todos
+					WHERE
+						id = :id
+			`)
+	if err != nil {
+		log.Println("[DB] Error prepared name query update todo:", err)
+		return nil, err
 	}
 
-	return todos, nil
+	_, err = stmt.Exec(todoModel)
+	if err != nil && err != sql.ErrNoRows {
+		log.Println("[DB] Error query delete todo:", err)
+		return nil, err
+	}
+
+	return nil, nil
 }
