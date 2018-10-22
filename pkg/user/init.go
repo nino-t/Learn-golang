@@ -1,4 +1,4 @@
-package todo
+package user
 
 import (
 	"context"
@@ -15,11 +15,7 @@ type core struct {
 }
 
 type ICore interface {
-	GetTodoListFromDB() ([]TodoModel, error)
-	CreateTodoFromDB(todoModel *TodoModel) (interface{}, error)
-	GetTodoDetailFromDB(todoModel *TodoModel) (interface{}, error)
-	UpdateTodoFromDB(todoModel *TodoModel) (interface{}, error)
-	DeleteTodoFromDB(todoModel *TodoModel) (interface{}, error)
+	GetUserListFromDB() ([]TodoModel, error)
 }
 
 var logFatalf = log.Fatalf
@@ -33,7 +29,7 @@ func Init(db *sqlx.DB, redis *redis.Pool) ICore {
 
 func examineDBHealth(db *sqlx.DB) {
 	if db == nil {
-		logFatalf("Failed to initialize todo. db object cannot be nil")
+		logFatalf("Failed to initialize user. db object cannot be nil")
 		return
 	}
 
@@ -42,14 +38,14 @@ func examineDBHealth(db *sqlx.DB) {
 
 	err := db.PingContext(ctx)
 	if err != nil {
-		logFatalf("Failed to initialize todo. cannot pinging to db. err: %s", err)
+		logFatalf("Failed to initialize user. cannot pinging to db. err: %s", err)
 		return
 	}
 }
 
 func examineRedisHealth(redis *redis.Pool) {
 	if redis == nil {
-		logFatalf("Failed to initialize todo. redis object cannot be nil")
+		logFatalf("Failed to initialize user. redis object cannot be nil")
 		return
 	}
 
@@ -58,14 +54,14 @@ func examineRedisHealth(redis *redis.Pool) {
 
 	conn, err := redis.GetContext(ctx)
 	if err != nil {
-		logFatalf("Failed to initialize todo. cannot connect to redis. err: %s", err)
+		logFatalf("Failed to initialize user. cannot connect to redis. err: %s", err)
 		return
 	}
 	defer conn.Close()
 
 	_, err = conn.Do("PING")
 	if err != nil {
-		logFatalf("Failed to initialize todo. cannot pinging to redis. err: %s", err)
+		logFatalf("Failed to initialize user. cannot pinging to redis. err: %s", err)
 		return
 	}
 }

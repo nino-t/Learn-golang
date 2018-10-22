@@ -28,24 +28,34 @@ func (c *core) GetTodoListFromDB() ([]TodoModel, error) {
 	return todos, nil
 }
 
-func (c *core) CreateTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
+func (c *core) CreateTodoFromDB(todoModel *TodoModel) (interface{}, error) {
 	stmt, err := c.db.PrepareNamed(`INSERT INTO todos (title) VALUES (:title)`)
 	if err != nil {
 		log.Println("[DB] Error prepared name query create todo:", err)
 		return nil, err
 	}
 
-	_, err = stmt.Exec(&todoModel)
+	result, err := stmt.Exec(&todoModel)
 	if err != nil {
 		log.Println("[DB] Error query insert todo:", err)
 		return nil, err
 	}
 
-	return nil, nil
+	id, err := result.LastInsertId()
+	if err != nil {
+		log.Println("[DB] Error query failed to get last insertID:", err)
+		return nil, err
+	}
+
+	todo := TodoModel{}
+	todo.ID = int(id)
+
+	res, err := c.GetTodoDetailFromDB(&todo)
+	return res, err
 }
 
-func (c *core) GetTodoDetailFromDB(todoModel *TodoModel) ([]TodoModel, error) {
-	var todos []TodoModel
+func (c *core) GetTodoDetailFromDB(todoModel *TodoModel) (interface{}, error) {
+	var todo TodoModel
 
 	query :=
 		`SELECT 
@@ -59,16 +69,17 @@ func (c *core) GetTodoDetailFromDB(todoModel *TodoModel) ([]TodoModel, error) {
 				deleted_at IS NULL AND
 				id = ?`
 
-	err := c.db.Select(&todos, query, todoModel.ID)
-	if err != nil && err != sql.ErrNoRows {
-		log.Println("[DB] Error query get todo:", err)
-		return todos, err
+	row := c.db.QueryRow(query, todoModel.ID)
+	err := row.Scan(&todo.ID, &todo.Title, &todo.Completed, &todo.CreatedAt)
+	if err != nil {
+		log.Println("[DB] Error query failed to Fetch row:", err)
+		return nil, err
 	}
 
-	return todos, nil
+	return todo, nil
 }
 
-func (c *core) UpdateTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
+func (c *core) UpdateTodoFromDB(todoModel *TodoModel) (interface{}, error) {
 	stmt, err := c.db.PrepareNamed(`
 		UPDATE 
 			todos
@@ -88,10 +99,11 @@ func (c *core) UpdateTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	res, err := c.GetTodoDetailFromDB(todoModel)
+	return res, err
 }
 
-func (c *core) DeleteTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
+func (c *core) DeleteTodoFromDB(todoModel *TodoModel) (interface{}, error) {
 	stmt, err := c.db.PrepareNamed(`
 				DELETE
 					FROM 
@@ -100,7 +112,7 @@ func (c *core) DeleteTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
 						id = :id
 			`)
 	if err != nil {
-		log.Println("[DB] Error prepared name query update todo:", err)
+		log.Println("[DB] Error prepared name query delete todo:", err)
 		return nil, err
 	}
 
@@ -110,5 +122,5 @@ func (c *core) DeleteTodoFromDB(todoModel *TodoModel) ([]TodoModel, error) {
 		return nil, err
 	}
 
-	return nil, nil
+	return nil, err
 }

@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/go-learn/pkg/todo"
+	"github.com/go-learn/pkg/user"
 
 	"github.com/go-learn/util/connection"
 	"github.com/go-learn/util/env"
@@ -79,11 +80,13 @@ func main() {
 	)
 
 	coreTodo := todo.Init(db, redis)
+	coreUser := user.Init(db, redis)
 
 	webserver.Serve(
 		webserver.SERVE_CONFIG{
 			PORT: cfg.APP.PORT,
 		},
 		coreTodo,
+		coreUser,
 	)
 }

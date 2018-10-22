@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/go-learn/pkg/todo"
+	"github.com/go-learn/pkg/user"
 
 	"github.com/go-learn/webserver/view"
 	"github.com/gorilla/mux"
@@ -17,12 +18,14 @@ type EnvConfig struct{}
 type handler struct {
 	cfg  EnvConfig
 	todo todo.ICore
+	user user.ICore
 }
 
-func Init(r *mux.Router, cfg EnvConfig, todo todo.ICore) {
+func Init(r *mux.Router, cfg EnvConfig, todo todo.ICore, user user.ICore) {
 	h := &handler{
 		cfg:  cfg,
 		todo: todo,
+		user: user,
 	}
 
 	r.HandleFunc("/ping", h.handlePing).Methods("GET")
